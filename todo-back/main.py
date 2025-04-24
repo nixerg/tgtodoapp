@@ -14,7 +14,6 @@ async def lifespan(app: FastAPI):
     print('Bot is ready')
     yield
 
-
 app = FastAPI(title="Todo app", lifespan=lifespan)
 
 app.add_middleware(
@@ -25,6 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/test-cors")
+async def test_cors():
+    return {"message": "CORS is working"}
+
 @app.get("/api/tasks/{tg_id}")
 async def tasks(tg_id: int):
     user = await rq.add_user(tg_id)
@@ -33,10 +36,10 @@ async def tasks(tg_id: int):
 @app.get('/api/main/{tg_id}')
 async def profile(tg_id: int):
     user = await rq.add_user(tg_id)
-    count = get_compeleted_task_count(user.id)
+    count = get_completed_task_count(user.id)
     return {'completedTasks': count}
 
-async def get_compeleted_task_count(user_id: int):
+async def get_completed_task_count(user_id: int):
     async with rq.async_session() as session:
         return await session.scalar(select(func.count(Task.id)).where(Task.completed == True, Task.user_id == user_id))
 
