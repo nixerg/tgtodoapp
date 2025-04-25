@@ -26,3 +26,14 @@ async def get_tasks(user_id: int):
         tasks = await session.scalars(select(Task).where(Task.user_id == user_id, Task.completed == False))
         serialized_tasks = [TaskSchema.model_validate(task).model_dump() for task in tasks]
         return serialized_tasks
+    
+async def add_task(user_id, title):
+    async with async_session() as session:
+        new_task = Task(title=title, user_id=user_id)
+        session.add(new_task)
+        await session.commit()
+
+async def update_task(task_id):
+    async with async_session() as session:
+        await session.execute(update(Task).where(Task.id == task_id).values(completed=True))
+        await session.commit()    
