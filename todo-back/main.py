@@ -31,9 +31,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/test-cors")
-async def test_cors():
-    return {"message": "CORS is working"}
+@app.get("/api/version")
+async def version():
+    return {"version": "0.0.1"}
 
 @app.get("/api/tasks/{tg_id}")
 async def tasks(tg_id: int):
